@@ -1,0 +1,170 @@
+<html>
+
+<head>
+	<input type="text" id="Thing" value="" style="display:none">
+	<script src="jquery.min.js"></script>
+	<script src="p5.js"></script>
+	<script src="p5.dom.min.js"></script>
+	<script src="p5.sound.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<meta charset="utf-8" />
+	<!-- <script src="https://127.0.0.1:8081/socket.io/socket.io.js"></script> -->
+	<script src="https://192.168.43.92:8081/socket.io/socket.io.js"></script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script> -->
+
+	<script type="text/javascript">
+
+
+		// function onOrientationChange(e) {
+		// 	var alpha = e.alpha,
+		// 		beta = e.beta,
+		// 		gamma = e.gamma;
+
+		// 	var elem = document.getElementById('map');
+		// 	map.innerHTML = alpha + " " + beta + " " + gamma;
+
+		// 	console.log(Math.floor(alpha) + " " + Math.floor(beta) + " " + Math.floor(gamma));
+		// }
+
+		// window.addEventListener('deviceorientation', onOrientationChange, false);
+
+
+		// var socket = io.connect()
+		var socket = io.connect('https://192.168.43.92:8081', {
+			port: 8081,
+			rememberTransport: false
+		});
+
+		socket.on('umbreallaconnect', function () {
+			console.log("Umbrella connected");
+		});
+
+		var alpha, beta, gamma;
+		var x, y, z;
+
+		window.addEventListener("load", function () {
+			document.getElementById("start").addEventListener("click", function () {
+
+				window.addEventListener('deviceorientation', (e) => {
+					// do something with e
+					alpha = e.alpha,
+						beta = e.beta,
+						gamma = e.gamma;
+
+					var elem = document.getElementById('map');
+					map.innerHTML = alpha + " " + beta + " " + gamma;
+
+					// console.log(Math.floor(alpha) + " " + Math.floor(beta) + " " + Math.floor(gamma));
+
+					socket.emit('orientdata', alpha, beta, gamma);
+				})
+
+				window.addEventListener('devicemotion', (e) => {
+					// do something with e
+					x = e.acceleration.x;
+					y = e.acceleration.y;
+					z = e.acceleration.z;
+
+					var elem = document.getElementById('map');
+					map.innerHTML = x + " " + y + " " + z;
+					socket.emit('motiondata', x, y, z);
+				})
+
+				// DeviceOrientationEvent.requestPermission()
+				// 	.then(response => {
+				// 		if (response == 'granted') {
+				// 			window.addEventListener('deviceorientation', (e) => {
+				// 				// do something with e
+				// 				alpha = e.alpha,
+				// 					beta = e.beta,
+				// 					gamma = e.gamma;
+
+				// 				var elem = document.getElementById('map');
+				// 				map.innerHTML = alpha + " " + beta + " " + gamma;
+
+				// 				console.log(Math.floor(alpha) + " " + Math.floor(beta) + " " + Math.floor(gamma));
+
+				// 				socket.emit('orientdata', alpha, beta, gamma);
+				// 			})
+				// 		}
+				// 	})
+				// 	.catch(console.error)
+
+				// DeviceMotionEvent.requestPermission()
+				// 	.then(response => {
+				// 		if (response == 'granted') {
+				// 			window.addEventListener('devicemotion', (e) => {
+				// 				// do something with e
+				// 				x = e.acceleration.x;
+				// 				y = e.acceleration.y;
+				// 				z = e.acceleration.z;
+
+				// 				var elem = document.getElementById('map');
+				// 				map.innerHTML = x + " " + y + " " + z;
+				// 				socket.emit('motiondata', x, y, z);
+				// 			})
+				// 		}
+				// 	})
+				// 	.catch(console.error)
+			})
+		})
+
+
+		function setup() {
+			createCanvas(windowWidth, windowHeight);
+		}
+
+		function draw() {
+			background(255);
+
+			// a = map(beta, );
+			b = map(beta, 0, 90, 0, height);
+			ellipse(width / 2, b, 50, 50);
+
+			// if (gamma < 0) {
+			// 	g = map(gamma, -90, 0, 0, width / 2);
+			// } else {
+			// 	g = map(gamma, 0, 90, width / 2, width);
+			// }
+			// ellipse(g, height / 2, 50, 50);
+
+			// textSize(50);
+			// text(x, 0, height/4);
+			// text(y , 0, height/4*2);
+			// text(z ,0, height/4*3);
+			if (x > 5 || x < -5) {
+				background(255, 0, 0);
+			}
+		}
+
+	</script>
+	<button id="start" style="width: 300px; height:300px"> start </button>
+</head>
+
+<body>
+	<script>
+
+	//
+	// var canvas;
+
+	// P5 STUFF
+
+	// function setup() {
+	// 	canvas = createCanvas(windowWidth, windowHeight);
+	// 	canvas.position (0,0);
+	// 	canvas.style('z-index', '-1');
+	// 	background (255,0,0);
+	// }
+	//
+	// function draw() {
+	// }
+
+	// function setup() {
+	// 	canvas = createCanvas(200, 200);
+	// 	background (255,0,0);
+	// }
+	</script>
+	<div id="map">null null null</div>
+</body>
+
+</html>

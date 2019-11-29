@@ -1,0 +1,130 @@
+<html>
+
+<head>
+	<input type="text" id="Thing" value="" style="display:none">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<meta charset="utf-8" />
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="webmidi.min.js"></script>
+	<script type="text/javascript">
+
+		//---------------midi setup------------------------
+		let outputMidiControl;
+		////
+		//Setting up MIDI
+		////
+
+		WebMidi.enable(function (err) { //check if WebMidi.js is enabled
+
+			if (err) {
+				console.log("WebMidi could not be enabled.", err);
+			} else {
+				console.log("WebMidi enabled!");
+			}
+
+
+			//name our visible MIDI input and output ports
+			console.log("---");
+			console.log("Inputs Ports: ");
+			for (i = 0; i < WebMidi.inputs.length; i++) {
+				console.log(i + ": " + WebMidi.inputs[i].name);
+			}
+
+			console.log("---");
+			console.log("Output Ports: ");
+			for (i = 0; i < WebMidi.outputs.length; i++) {
+				console.log(i + ": " + WebMidi.outputs[i].name);
+
+			}
+
+			//Choose an input port
+			inputSoftware = WebMidi.inputs[1];
+			//The 0 value is the first value in the array
+			//Meaning that we are going to use the first MIDI input we see
+			//This can be changed to a different number,
+			//or given a string to select a specific port
+
+			outputMidiControl = WebMidi.outputs[0];
+			///
+		});
+
+
+		var socket = io.connect();
+
+		socket.on('connect', function () {
+			console.log("Connected");
+			console.log(socket.id);
+		});
+
+
+
+		// Receive from any event
+
+		let aa, bb, gg; // orientation data
+		let xx, yy, zz; // motion data
+
+		socket.on('orientdata', function (alpha, beta, gamma) {
+			aa = alpha;
+			bb = beta;
+			gg = gamma;
+			// console.log("orient: "+ alpha + "  "+   beta+ "  "+  gamma);
+
+			let controlValue = floor(map(bb, 0, 90, 0, 127))
+			outputMidiControl.sendControlChange(109, controlValue);
+			console.log(controlValue)
+		});
+
+		socket.on('motiondata', function (x, y, z) {
+			// console.log("motion: "+ x + "  "+   y+ "  "+  z);
+			xx = x;
+			yy = y;
+			zz = z;
+		});
+
+
+		function setup() {
+			createCanvas(windowWidth, windowHeight);
+		}
+
+		function draw() {
+			background(255);
+
+			fill(0);
+			verti = map(bb, 0, 90, height, 0);
+			ellipse(width / 2, verti, 100, 100); // vertical
+
+			hori = map(aa, 360, 180, 0, width);
+
+			if (aa < 90) {
+				hori = map(aa, 90, 0, 0, width / 2);
+			} else {
+				hori = map(aa, 360, 270, width / 2, width);
+			}
+			ellipse(hori, height / 2, 100, 100); // horizontal
+
+
+
+			textSize(50);
+			// text(x, 0, height/4);
+			// text(y , 0, height/4*2);
+			// text(z ,0, height/4*3);
+			if (yy > 5 || yy < -5) {
+				background(255, 0, 0);
+			}
+
+
+		}
+
+	</script>
+</head>
+
+<body>
+	<script>
+	</script>
+</body>
+
+</html>

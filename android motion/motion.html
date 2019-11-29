@@ -1,0 +1,31 @@
+<html>
+<head>
+	<script type="text/javascript">
+	window.addEventListener("load",function () {
+		document.getElementById("start").addEventListener("click", function () {
+			DeviceOrientationEvent.requestPermission()
+			.then(response => {
+				if (response == 'granted') {
+					window.addEventListener('deviceorientation', (e) => {
+						// do something with e
+						var alpha = e.alpha,
+						beta = e.beta,
+						gamma = e.gamma;
+
+						var elem = document.getElementById('map');
+						map.innerHTML = alpha + " " + beta + " " + gamma;
+
+						console.log(Math.floor(alpha) + " " + Math.floor(beta) + " " + Math.floor(gamma));
+					})
+				}
+			})
+			.catch(console.error)
+		})
+	})
+	</script>
+</head>
+<body>
+	<div id="map"></div>
+	<button id="start"> start </button>
+</body>
+</html>
